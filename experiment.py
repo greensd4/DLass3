@@ -1,9 +1,10 @@
 import torch
 
 import torch.nn as nn
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
+import numpy as np
 
-import torch.functional as F
+BATCH = 100
 
 
 class LSTMTagger(nn.Module):
@@ -19,7 +20,7 @@ class LSTMTagger(nn.Module):
         self.lstm = nn.LSTM(embedding_dim, hidden_dim)
 
         # The linear layer that maps from hidden state space to tag space
-        #self.hidden2tag = nn.Linear(hidden_dim, tagset_size)
+        # self.hidden2tag = nn.Linear(hidden_dim, tagset_size)
         self.hidden = self.init_hidden()
 
     def init_hidden(self):
@@ -36,32 +37,31 @@ class LSTMTagger(nn.Module):
         #tag_scores = F.log_softmax(tag_space, dim=1)
         return lstm_out,self.hidden
 
-    data_file, is_train = True, separator = " "):
-    """
-    get data as windows saved in data loader
-    :param data_file: path to file
-    :param is_train: is train routine
-    :param separator: seprator in files
-    :return: data loader
-    """
-    print "Getting data from: ", data_file
-    sentences = utils.read_data(data_file, is_train=True, seperator=separator)
-    if is_train:
-        utils.initialize_indexes()
-    windows, tags = utils.create_windows(sentences)
-    windows, tags = np.asarray(windows, np.float32), np.asarray(tags, np.int32)
-    windows, tags = torch.from_numpy(windows), torch.from_numpy(tags)
-    windows, tags = windows.type(torch.LongTensor), tags.type(torch.LongTensor)
-    dataset = torch.utils.data.TensorDataset(windows, tags)
-    if is_train:
-        return DataLoader(dataset, batch_size=BATCH, shuffle=True)
-    return DataLoader(dataset, batch_size=1, shuffle=True)
+
+
+    def getDataset(data_file, is_train = True, separator = " "):
+        """
+        get data as windows saved in data loader
+        :param data_file: path to file
+        :param is_train: is train routine
+        :param separator: seprator in files
+        :return: data loader
+        """
+        print "Getting data from: ", data_file
+        sentences = utils.read_data(data_file, is_train=True, seperator=separator)
+        if is_train:
+            utils.initialize_indexes()
+        windows, tags = utils.create_windows(sentences)
+        windows, tags = np.asarray(windows, np.float32), np.asarray(tags, np.int32)
+        windows, tags = torch.from_numpy(windows), torch.from_numpy(tags)
+        windows, tags = windows.type(torch.LongTensor), tags.type(torch.LongTensor)
+        dataset = torch.utils.data.TensorDataset(windows, tags)
+        if is_train:
+            return DataLoader(dataset, batch_size=BATCH, shuffle=True)
+        return DataLoader(dataset, batch_size=1, shuffle=True)
 
 
 class utils:
-
-
-
 
     C2I = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6,
            "7": 7, "8": 8, "9": 9, "a": 10, "b": 11, "c": 12, "d": 13}
