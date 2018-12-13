@@ -41,7 +41,7 @@ class Trainer(object):
         sum_loss = 0.0
         start_time = time.time()
         for epoch in range(EPOCHS):
-            print "Epoch number ", epoch, " started!"
+            print "Epoch number ", epoch +1, " started!"
             random.shuffle(train_data)
             sum_loss += self.routine(train_data, is_train=True)
             print "train #{}: loss is {}, accuracy is {}%".format(epoch, sum_loss/len(train_data), self.get_accuracy(train_data))
