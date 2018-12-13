@@ -15,10 +15,10 @@ def generate_seq(num):
         neg_str = ''
         for j in range(5):
             # gets new number for positive seq.
-            pos_num_seq = "".join([random.choice("123456789") for x in range(random.randint(1,20))])
+            pos_num_seq = "".join([random.choice("0123456789") for x in range(random.randint(1,20))])
             pos_nums.append(pos_num_seq)
             # gets new number for negative seq.
-            neg_num_seq = "".join([random.choice("123456789") for x in range(random.randint(1,20))])
+            neg_num_seq = "".join([random.choice("0123456789") for x in range(random.randint(1,20))])
             neg_nums.append(neg_num_seq)
         # concatenate the numbers and the letters.
         for k in range(len(pos_nums)-1):
