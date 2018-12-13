@@ -64,6 +64,26 @@ def write_train(pos,neg,num):
         print 'successfully created the train set!'
 
 
+def write_dev(pos,neg,num):
+    pos_count = 0
+    neg_count = 0
+    fd = open('pos_neg_test', 'w')
+    for k in range(num):
+        r = random.randint(0, 1)
+        if r is 0:
+            fd.write(pos[k] + '\tpos\n')
+            pos_count += 1
+        else:
+            fd.write(neg[k] + '\tneg\n')
+            neg_count += 1
+    fd.close()
+    if any([pos_count/num > 0.7, neg_count/num > 0.7]):
+        print 'trying again!'
+        write_train(pos,neg,num)
+    else:
+        print 'successfully created the test set!'
+
+
 def write_test(pos,neg,num):
     pos_count = 0
     neg_count = 0
@@ -88,5 +108,8 @@ if __name__ == '__main__':
     write_examples(pos_ex,neg_ex,500)
     pos_train,neg_train = generate_seq(5000)
     write_train(pos_train,neg_train,5000)
-    pos_test,neg_test = generate_seq(5000)
-    write_test(pos_test,neg_test,5000)
+
+    pos_dev, neg_dev = generate_seq(5000)
+    write_dev(pos_dev, neg_dev, 5000)
+
+
