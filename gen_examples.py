@@ -47,7 +47,7 @@ def write_examples(pos,neg,num):
 def write_train(pos,neg,num):
     pos_count = 0
     neg_count = 0
-    fd = open('pos__neg_train', 'w')
+    fd = open('pos_neg_train', 'w')
     for k in range(num):
         r = random.randint(0, 1)
         if r is 0:
@@ -67,7 +67,7 @@ def write_train(pos,neg,num):
 def write_test(pos,neg,num):
     pos_count = 0
     neg_count = 0
-    fd = open('pos__neg_test', 'w')
+    fd = open('pos_neg_test', 'w')
     for k in range(num):
         r = random.randint(0, 1)
         if r is 0:
