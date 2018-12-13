@@ -47,4 +47,3 @@ def createWordVec(words, is_tagged=True):
         tags_vec.append(T2I[tag])
 
     return words_vec, tags_vec
-

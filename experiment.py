@@ -1,126 +1,97 @@
-import torch
-
-import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader
+import sys
+import time
+from random import random
+import dynet as dy
 import numpy as np
 import utils as ut
-import torch.functional as F
-import torch.optim as optim
+from utils import T2I, I2T, C2I, I2C
 
 STUDENT={'name': 'Daniel Greenspan_Eilon Bashari',
          'ID': '308243948_308576933'}
 
-
 # Globals
-EMBEDDING_ROW_LENGTH = 50
-WINDOWS_SIZE = 5
-
-HID = 100
-PT_HID = 120
-BATCH = 1024
-EPOCHS = 3
-LR = 0.01
-VOCAV_SIZE = len(ut.C2I)
-TAGS_SIZE = len(ut.T2I)
-inputfile = "pos_neg_train"
+IN_DIM = 100
+HID_DIM = 100
+TAGS_SIZE = 2
+EPOCHS = 6
+VSIZE = len(C2I)
 
 
-class LSTMmodule(nn.Module):
-    def __init__(self, embedding_dim, hidden_dim, vocab_size, tagset_size):
-        super(LSTMmodule, self).__init__()
-        self.hidden_dim = hidden_dim
-        self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
+class LSTM(object):
+    def __init__(self, in_dim, lstm_dim, out_dim, model):
+        self.builder = dy.VanillaLSTMBuilder(1, in_dim, lstm_dim, model)
+        self.W = model.add_parameters((out_dim, lstm_dim))
 
-        # The LSTM takes word embeddings as inputs, and outputs hidden states
-        # with dimensionality hidden_dim.
-        self.lstm = nn.LSTM(embedding_dim, hidden_dim)
-
-        # The linear layer that maps from hidden state space to tag space
-        self.hidden2tag = nn.Linear(hidden_dim, tagset_size)
-
-        self.hidden = self.init_hidden()
-
-    def init_hidden(self):
-        # Before we've done anything, we dont have any hidden state.
-        # Refer to the Pytorch documentation to see exactly
-        # why they have this dimensionality.
-        # The axes semantics are (num_layers, minibatch_size, hidden_dim)
-        return (torch.zeros(1, 1, self.hidden_dim),
-                torch.zeros(1, 1, self.hidden_dim))
-
-    def forward(self, sentence):
-        embeds = self.word_embeddings(sentence)
-        lstm_out, self.hidden = self.lstm(embeds.view(len(sentence), 1, -1), self.hidden)
-        tag_space = self.hidden2tag(lstm_out.view(len(sentence), -1))
-        tag_scores = F.log_softmax(torch.tanh(tag_space), dim=1)
-        return tag_scores
-
-def get_dataset(data_file, is_train=True):
-    """
-    get data as windows saved in data loader
-    :param data_file: path to file
-    :param is_train: is train routine
-    :param separator: seprator in files
-    :return: data loader
-    """
-    print "Getting data from: ", data_file
-    words = ut.read_data(data_file, is_train=True)
-    if is_train:
-        sequences, tags = ut.createWordVec(words)
-        tags = np.asarray(tags, np.int32)
-        tags = torch.from_numpy(tags)
-        tags = tags.type(torch.LongTensor)
-    else:
-        sequences = ut.createWordVec(words)
-
-    sequences = np.asarray([np.asarray(sec) for sec in sequences])
-    # sequences = np.asarray(sequences, np.float32)
-
-    sequences = [torch.from_numpy(sec) for sec in sequences]
-
-    sequences = [sec.type(torch.LongTensor) for sec in sequences]
-
-    if is_train:
-        data_set = torch.utils.data.TensorDataset(sequences)
-        return DataLoader(data_set, batch_size=BATCH, shuffle=True)
-    data_set = torch.utils.data.TensorDataset(sequences)
-    return DataLoader(data_set, batch_size=1, shuffle=True)
+    def __call__(self, sequence):
+        lstm = self.builder.initial_state()
+        prm = self.W.expr()
+        sn= lstm.transduce(sequence)
+        result = prm * sn[-1]
+        return result
 
 
-def trainer(model, data_set, loss_func, optimizer):
+class Trainer(object):
+    def __init__(self):
+        self.m = dy.Model()
+        self.trainer = dy.AdamTrainer(self.m)
+        self.E = self.m.add_lookup_parameters((VSIZE, IN_DIM))
+        self.acceptor = LSTM(IN_DIM, HID_DIM, TAGS_SIZE, self.m)
 
-    for ITER in range(EPOCHS):  # again, normally you would NOT do 300 epochs, it is toy data
-        for sequence, tag in data_set:
-            # Step 1. Remember that Pytorch accumulates gradients.
-            # We need to clear them out before each instance
-            model.zero_grad()
+    def train(self, train_data, test_data):
+        sum_loss = 0.0
+        start_time = time.time()
+        for epoch in range(EPOCHS):
+            print "Epoch number ", epoch, " started!"
+            random.shuffle(train_data)
+            sum_loss += self.routine(train_data, is_train=True)
+            print "train #{}: loss is {}, accuracy is {}".format(epoch, sum_loss/len(train_data), self.get_accuracy(train_data))
 
-            # Also, we need to clear out the hidden state of the LSTM,
-            # detaching it from its history on the last instance.
-            model.hidden = model.init_hidden()
+            test_loss = self.routine(test_data)
+            print "test: " + "loss is: " + str(float(test_loss) / len(test_data)) + " accuracy is: " + str(self.get_accuracy(test_data))
+            sum_loss = 0.0
 
-            # Step 2. Get our inputs ready for the network, that is, turn them into
-            # Tensors of word indices.
-            # sentence_in = prepare_sequence(sentence, word_to_ix)
-            # targets = prepare_sequence(tags, tag_to_ix)
+        end_time = time.time()
+        total_time = end_time - start_time
+        print "total time: " + str(total_time)
 
-            # Step 3. Run our forward pass.
-            tag_scores = model(sequence)
-
-            # Step 4. Compute the loss, gradients, and update the parameters by
-            #  calling optimizer.step()
-            loss = loss_func(tag_scores, tag)
+    def routine(self, data, is_train=False):
+        sum_loss = 0.0
+        for word, tag in data:
+            dy.renew_cg()
+            word_as_vector = self.word_to_vec(word)
+            predictions = self.acceptor(word_as_vector)
+            loss = dy.pickneglogsoftmax(predictions, tag)
+            sum_loss += loss.npvalue()
             loss.backward()
-            optimizer.step()
+            if is_train:
+                self.trainer.update()
+        return sum_loss
 
-    # See what the scores are after training
-    with torch.no_grad():
-        tag_scores = model(data_set[0])
-        print(tag_scores)
+    def predict(self, word):
+        dy.renew_cg()
+        vec = self.word_to_vec(word)
+        preds = dy.softmax(self.acceptor(vec))
+        vals = preds.npvalue()
+        return np.argmax(vals)
+
+    def get_accuracy(self, data):
+        good = 0
+        for word,tag in data:
+            pred = self.predict(word)
+            if tag == pred:
+                good += 1
+        return float(good) / float(len(data))
+
+    def word_to_vec(self, word):
+        return [self.E[C2I[c]] for c in word]
+
+
+def main(argv):
+    train_data = ut.read_data(argv[0], is_train=True)
+    test_data = ut.read_data(argv[1], is_train=True)
+    trainer = Trainer()
+    trainer.train(train_data, test_data)
+
 
 if __name__ == '__main__':
-    module = LSTMmodule(EMBEDDING_ROW_LENGTH, HID, VOCAV_SIZE, TAGS_SIZE)
-    data = get_dataset(inputfile)
-    loss_function = nn.NLLLoss()
-    optimizer = optim.SGD(module.parameters(), lr=0.1)
-    module.trainer(module, data, loss_function, optimizer)
+    main(sys.argv[1:])
