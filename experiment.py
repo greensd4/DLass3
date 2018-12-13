@@ -1,6 +1,6 @@
 import sys
 import time
-from random import random
+import random
 import dynet as dy
 import numpy as np
 import utils as ut
@@ -13,7 +13,7 @@ STUDENT={'name': 'Daniel Greenspan_Eilon Bashari',
 IN_DIM = 100
 HID_DIM = 100
 TAGS_SIZE = 2
-EPOCHS = 6
+EPOCHS = 3
 VSIZE = len(C2I)
 
 
@@ -44,10 +44,10 @@ class Trainer(object):
             print "Epoch number ", epoch, " started!"
             random.shuffle(train_data)
             sum_loss += self.routine(train_data, is_train=True)
-            print "train #{}: loss is {}, accuracy is {}".format(epoch, sum_loss/len(train_data), self.get_accuracy(train_data))
+            print "train #{}: loss is {}, accuracy is {}%".format(epoch, sum_loss/len(train_data), self.get_accuracy(train_data))
 
             test_loss = self.routine(test_data)
-            print "test: " + "loss is: " + str(float(test_loss) / len(test_data)) + " accuracy is: " + str(self.get_accuracy(test_data))
+            print "test #{}: loss is {}, accuracy is {}%".format(epoch, test_loss/len(test_data), self.get_accuracy(test_data))
             sum_loss = 0.0
 
         end_time = time.time()
@@ -60,7 +60,7 @@ class Trainer(object):
             dy.renew_cg()
             word_as_vector = self.word_to_vec(word)
             predictions = self.acceptor(word_as_vector)
-            loss = dy.pickneglogsoftmax(predictions, tag)
+            loss = dy.pickneglogsoftmax(predictions, T2I[tag])
             sum_loss += loss.npvalue()
             loss.backward()
             if is_train:
@@ -78,9 +78,10 @@ class Trainer(object):
         good = 0
         for word,tag in data:
             pred = self.predict(word)
-            if tag == pred:
+            if T2I[tag] == pred:
                 good += 1
-        return float(good) / float(len(data))
+        print good, len(data)
+        return 100*(float(good) / float(len(data)))
 
     def word_to_vec(self, word):
         return [self.E[C2I[c]] for c in word]

@@ -15,10 +15,10 @@ def generate_seq(num):
         neg_str = ''
         for j in range(5):
             # gets new number for positive seq.
-            pos_num_seq = random.randint(1,10000000)
+            pos_num_seq = "".join([random.choice("123456789") for x in range(random.randint(1,20))])
             pos_nums.append(pos_num_seq)
             # gets new number for negative seq.
-            neg_num_seq = random.randint(1,10000000)
+            neg_num_seq = "".join([random.choice("123456789") for x in range(random.randint(1,20))])
             neg_nums.append(neg_num_seq)
         # concatenate the numbers and the letters.
         for k in range(len(pos_nums)-1):
@@ -106,10 +106,11 @@ def write_test(pos,neg,num):
 if __name__ == '__main__':
     pos_ex,neg_ex = generate_seq(500)
     write_examples(pos_ex,neg_ex,500)
-    pos_train,neg_train = generate_seq(5000)
-    write_train(pos_train,neg_train,5000)
 
-    pos_dev, neg_dev = generate_seq(5000)
-    write_dev(pos_dev, neg_dev, 5000)
+    pos_train,neg_train = generate_seq(200)
+    write_train(pos_train,neg_train,200)
+
+    pos_dev, neg_dev = generate_seq(200)
+    write_dev(pos_dev, neg_dev, 200)
 
 
