@@ -107,10 +107,10 @@ if __name__ == '__main__':
     pos_ex,neg_ex = generate_seq(500)
     write_examples(pos_ex,neg_ex,500)
 
-    pos_train,neg_train = generate_seq(200)
-    write_train(pos_train,neg_train,200)
+    pos_train,neg_train = generate_seq(2000)
+    write_train(pos_train,neg_train,2000)
 
-    pos_dev, neg_dev = generate_seq(200)
-    write_dev(pos_dev, neg_dev, 200)
+    pos_dev, neg_dev = generate_seq(2000)
+    write_dev(pos_dev, neg_dev, 2000)
 
 
