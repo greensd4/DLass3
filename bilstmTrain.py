@@ -1,9 +1,12 @@
+import os
 from optparse import OptionParser
+import dynet as dy
 
 UNK = "UUUNKKK"
-SEPERATOR = " "
-WORDS, TAGS = set(), set()
-T2I, I2T, W2I, I2W = dict(), dict(), dict(), dict()
+SEPARATOR = " "
+WORDS, TAGS , CHARS = set(), set(), set()
+T2I, I2T, W2I, I2W, I2C, C2I = dict(), dict(), dict(), dict(), dict(), dict()
+S2I, I2S, P2I, I2P = dict(), dict(), dict(), dict()
 SUFF_LENGTH , PREF_LENGTH = 3, 3
 
 option_parser = OptionParser()
@@ -11,8 +14,52 @@ option_parser.add_option("-t", "--type", dest="type", help="choose POS/NER taggi
                          default="pos")
 option_parser.add_option("-d", "--dev", help="dev file name", dest="dev", default="dev")
 
+
 def main():
     options, args = option_parser.parse_args()
+    nn_type, ftrain, fmodel = args
+    if options.dev == 'dev':
+        fdev = os.path.join(options.type, options.dev)
+    else:
+        fdev = options.dev
+    train_data, dev_data = read_train_and_dev(ftrain, fdev)
+    model = dy.Model()
+
+
+def init_fix():
+    prefixes = []
+    suffix = []
+    for word in WORDS:
+        pref = word_to_prefix(word)
+        suff = word_to_suffix(word)
+        prefixes.append(pref)
+        suffix.append(suff)
+    return set(prefixes), set(suffix)
+
+
+def initialize_pref_suff():
+    pref, suff = init_fix()
+    global I2P, I2S, S2I, P2I
+    I2P, P2I = index_set(pref)
+    I2S, S2I = index_set(suff)
+
+
+
+def initialize_char_dictionaries():
+    global CHARS, I2C, C2I
+    for word in WORDS:
+        for c in word:
+            CHARS.add(c)
+    I2C, C2I = index_set(CHARS)
+
+
+def initialize_globals(tag_type, nn_type):
+    global SEPARATOR
+    if tag_type.lower() == "ner":
+        SEPARATOR = "\t"
+    else:
+        SEPARATOR = " "
+
 
 
 def word_to_prefix(w):
@@ -61,7 +108,7 @@ def read_data(fname, tagged_data=True, is_train=True):
     global TAGS, WORDS
     for line in file(fname):
         try:
-            word, label = line.strip().split(SEPERATOR, 1)
+            word, label = line.strip().split(SEPARATOR, 1)
             sentence.append((word, label))
             if is_train:
                 TAGS.add(label)
