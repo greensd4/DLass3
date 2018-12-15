@@ -4,7 +4,7 @@ import random
 import dynet as dy
 import numpy as np
 import utils as ut
-from utils import T2I, I2T, C2I, I2C
+from utils import T2I, C2I
 
 STUDENT={'name': 'Daniel Greenspan_Eilon Bashari',
          'ID': '308243948_308576933'}

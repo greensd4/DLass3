@@ -1,6 +1,4 @@
 import os
-import random
-from itertools import izip
 from math import floor
 from optparse import OptionParser
 from time import time
@@ -78,6 +76,7 @@ def train(neural_network, trainer, train_data, dev_data, ignored_tag):
         avg_loss = total_loss / total_words
         print "Epoch: {}, Total Loss: {:12f}, Time: {:9f}s, ACC: {:11f}".format(epoch+1, total_loss, end_time, acc)
         print "AVG LOSS ", avg_loss
+
 
 def accuracy(nn, dev, ignored):
     correct = 0

@@ -5,8 +5,8 @@ import json
 
 BACKWARD = "BACKWARD"
 FORWARD = "FORWARD"
+SUFF_LENGTH, PREF_LENGTH = 3, 3
 
-SUFF_LENGTH , PREF_LENGTH = 3, 3
 
 def word_to_prefix(w):
     return w[0:PREF_LENGTH]
@@ -136,7 +136,6 @@ class SubWordEmbeddingDoubleBiLSTM(DoubleBiLSTM):
         return representations
 
 
-
 class CharAndEmbeddedDoubleBiLSTM(CharLevelDoubleBiLSTM):
     def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize , model,  in2word, char2index):
         CharLevelDoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model,  in2word, char2index)
@@ -218,6 +217,3 @@ def load_nn_and_data(fname, nn):
 
     net.load_model(fname)  # loads the parameter collection
     return net, tags, W2I, C2I, unk_index
-
-
-

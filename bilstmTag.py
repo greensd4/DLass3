@@ -2,7 +2,6 @@ import dynet as dy
 from optparse import OptionParser
 from bi_lstm_models import load_nn_and_data
 option_parser = OptionParser()
-option_parser.add_option()
 SEPARATOR = " "
 UNK = "UUUNKKK"
 
@@ -17,10 +16,15 @@ def main():
     net, tags, W2I, C2I, unk_index = load_nn_and_data(model_file, nn_type)
     data = read_data(test_file)
     total_tags = []
+
+    global SEPARATOR
+    if options.type == 'ner':
+        SEPARATOR = '\t'
+
     for sentence in data:
         sentence = [W2I[word] if word in W2I.keys() else W2I[UNK] for word in sentence]
         tags_pred = net.predict(sentence)
-        tags_pred = [tags[t] for t in tags_pred]
+        tags_pred = [str(tags[unicode(t)]) for t in tags_pred]
         total_tags = total_tags + tags_pred
     save_predictions(test_file, "test4."+options.type, total_tags)
 
@@ -32,7 +36,7 @@ def read_data(test_file):
     print "Reading data from:", test_file
     for word in file(test_file):
         if word.strip() != "":
-            sentence.append(word)
+            sentence.append(word.strip())
         else:
             data.append((sentence))
             sentence = []
@@ -44,11 +48,13 @@ def save_predictions(in_file, out_file, tags):
     print "Writing Predictions!"
     fd_out = open(out_file, 'w')
     fd_in = open(in_file, 'r')
-    for i, line in enumerate(fd_in):
+    i = 0
+    for line in fd_in:
         if line.strip() == "":
             fd_out.write(line)
         else:
-            line = line + SEPARATOR + tags[i]
+            print tags[i]
+            line = line.strip() + SEPARATOR + tags[i] + '\n'
             fd_out.write(line)
             i += 1
 
