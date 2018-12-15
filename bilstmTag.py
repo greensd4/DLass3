@@ -10,6 +10,7 @@ UNK = "UUUNKKK"
 option_parser.add_option("-t", "--type", dest="type", help="choose POS/NER tagging (pos/ner) - default is pos tagging",
                          default="pos")
 
+
 def main():
     (options, args) = option_parser.parse_args()
     nn_type , model_file, test_file = args
