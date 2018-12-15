@@ -1,0 +1,9 @@
+{
+    "layers": 2,
+    "em_dim": 50,
+    "in_dim": 150,
+    "hid_dim": 100,
+    "tags_size": 0,
+    "vsize": 0,
+    "cvsize": 0
+}

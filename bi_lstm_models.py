@@ -6,6 +6,15 @@ import json
 BACKWARD = "BACKWARD"
 FORWARD = "FORWARD"
 
+SUFF_LENGTH , PREF_LENGTH = 3, 3
+
+def word_to_prefix(w):
+    return w[0:PREF_LENGTH]
+
+
+def word_to_suffix(w):
+    return w[-SUFF_LENGTH:]
+
 
 class BiLSTM:
     def __init__(self, layers, em_dim, lstm_dim, model):
@@ -91,8 +100,7 @@ class WordEmbeddingDoubleBiLSTM(DoubleBiLSTM):
         return [dy.lookup(self.E, i) for i in input]
 
 
-
-class BDoubleBiLSTM(DoubleBiLSTM):
+class CharLevelDoubleBiLSTM(DoubleBiLSTM):
     def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model):
         DoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model)
         self.LSTMc = dy.LSTMBuilder(layers, em_dim, em_dim, self.model)
@@ -104,7 +112,8 @@ class BDoubleBiLSTM(DoubleBiLSTM):
             transduces.append(init_state.transduce([dy.lookup(self.E, c) for c in word])[-1])
         return transduces
 
-class C(DoubleBiLSTM):
+
+class SubWordEmbeddingDoubleBiLSTM(DoubleBiLSTM):
     def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model, Wp2I, Ws2I):
         DoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model)
         self.Epre = self.model.add_lookup_parameters(len(Wp2I), em_dim)
@@ -116,12 +125,13 @@ class C(DoubleBiLSTM):
         representations = []
         for word in input:
             w_r = dy.lookup(self.E, word)
-            p_r = dy.lookup(self.Epre, self.Wp2I[word])
-            s_r = dy.lookup(self.Esuf, self.Ws2I[word])
+            p_r = dy.lookup(self.Epre, self.Wp2I[word_to_prefix(word)])
+            s_r = dy.lookup(self.Esuf, self.Ws2I[word_to_suffix(word)])
             representations.append(w_r + p_r + s_r)
         return representations
 
-class D(BDoubleBiLSTM):
+
+class CharAndEmbeddedDoubleBiLSTM(CharLevelDoubleBiLSTM):
     def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize , model):
         DoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model)
         self.WE = self.model.add_lookup_parameters(vsize, em_dim)
@@ -132,7 +142,7 @@ class D(BDoubleBiLSTM):
         # input is list of tuples, the first value in the tuple is a word as index,
         # and the second is list of indexes of each char in word
         words, chars = zip(*input)
-        chars = BDoubleBiLSTM.represent(self, list(chars))
+        chars = CharLevelDoubleBiLSTM.represent(self, list(chars))
         embedded = []
         for word, em_char in itertools.izip(words, chars):
             embedded.append(dy.concatenate([dy.lookup(self.WE, word), em_char]))
@@ -141,22 +151,20 @@ class D(BDoubleBiLSTM):
         return [W*x+b for x in embedded]
 
 
-
-
-def save_nn_and_data(fname, neural_net, layers, em_dim, lstm_dim, in_dim, tags_size, model, I2T, vsize=0, cvsize=0,
-                           wp_index=None, ws_index=None, I2W=None, I2C=None, unk_index=-1):
+def save_nn_and_data(fname, neural_net, params, model, I2T, wp_index, ws_index, I2W, I2C, unk_index):
     data_dict = {
         "NN_TYPE": neural_net.__name__,
         "PARAMETERS": {
-            "LAYERS":layers,
-            "EM_DIM": em_dim,
-            "LSTM_DIM" :lstm_dim,
-            "IN_DIM":in_dim,
-            "TAGS_SIZE": tags_size,
-            "VSIZE": vsize,
-            "CVSIZE":cvsize,
-            "MODEL":model.__name__
+            "LAYERS":params["layers"],
+            "EM_DIM": params["em_dim"],
+            "LSTM_DIM" :params["lstm_dim"],
+            "IN_DIM":params["in_dim"],
+            "TAGS_SIZE": params["tags_size"],
+            "VSIZE": params["vsize"],
+            "CVSIZE":params["cvsize"],
+
         },
+        "MODEL":model.__name__,
         "WORDS_LIST": {
             "I2W": I2W,
             "I2C": I2C,
@@ -195,16 +203,15 @@ def load_nn_and_data(fname):
     if nn_type == WordEmbeddingDoubleBiLSTM.__name__:  # Option (a)
         net = WordEmbeddingDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, len(I2W), model)
 
-    elif nn_type == BDoubleBiLSTM.__name__:  # Option (b)
-        net = BDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model)
+    elif nn_type == CharLevelDoubleBiLSTM.__name__:  # Option (b)
+        net = CharLevelDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model)
 
-    elif nn_type == C.__name__:
-        net = C(layers, em_dim, in_dim, lstm_dim, tags_size, len(I2W), model, wp_index, ws_index)
+    elif nn_type == SubWordEmbeddingDoubleBiLSTM.__name__:
+        net = SubWordEmbeddingDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, len(I2W), model, wp_index, ws_index)
     else:
-        net = D(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize, model=model)
+        net = CharAndEmbeddedDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize, model=model)
 
     net.load_model(fname)  # loads the parameter collection
     return net, tags, I2W, I2C, unk_index
 
 
-def if __name__ == '__main__':

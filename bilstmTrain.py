@@ -1,13 +1,28 @@
 import os
+import random
+from math import floor
 from optparse import OptionParser
+from time import time
+
 import dynet as dy
+import json
+from bi_lstm_models import WordEmbeddingDoubleBiLSTM as A
+from bi_lstm_models import CharLevelDoubleBiLSTM as B
+from bi_lstm_models import SubWordEmbeddingDoubleBiLSTM as C
+from bi_lstm_models import CharAndEmbeddedDoubleBiLSTM as D
+from bi_lstm_models import word_to_suffix, word_to_prefix
+from bi_lstm_models import save_nn_and_data
 
 UNK = "UUUNKKK"
 SEPARATOR = " "
+UNK_INDEX = -1
 WORDS, TAGS , CHARS = set(), set(), set()
-T2I, I2T, W2I, I2W, I2C, C2I = dict(), dict(), dict(), dict(), dict(), dict()
+T2I, I2T, W2I, I2W = dict(), dict(), dict(), dict()
+I2C, C2I = dict(), dict()
 S2I, I2S, P2I, I2P = dict(), dict(), dict(), dict()
-SUFF_LENGTH , PREF_LENGTH = 3, 3
+PARAMS = dict()
+BATCH = 500
+EPOCHS = 5
 
 option_parser = OptionParser()
 option_parser.add_option("-t", "--type", dest="type", help="choose POS/NER tagging (pos/ner) - default is pos tagging",
@@ -22,8 +37,73 @@ def main():
         fdev = os.path.join(options.type, options.dev)
     else:
         fdev = options.dev
+    initialize_globals(options.type)
     train_data, dev_data = read_train_and_dev(ftrain, fdev)
+    neural_network = initialize_neural_network(nn_type)
+    trainer = dy.AdamTrainer(neural_network.model)
+    train(neural_network, trainer, train_data, dev_data)
+    save_information(fmodel, neural_network)
+
+
+def save_information(fmodel, neural_network):
+    save_nn_and_data(fmodel, neural_network, PARAMS, neural_network.model, I2T, P2I, S2I, I2W, I2C, UNK_INDEX)
+
+
+def train(neural_network, trainer, train_data, dev_data):
+
+    for i in range(EPOCHS):
+        total_loss = 0.0
+        start_time = time()
+        batches = split_data_to_batch(train_data)
+        for batch in batches:
+            for sentence, tags in batch:
+                loss = dy.esum(neural_network.get_loss(sentence, tags))
+                total_loss = loss.value()
+                loss.backward()
+                trainer.update()
+
+            acc = accuracy(neural_network, dev_data, ignored_tag)
+
+
+
+def accuracy(nn, dev, ignored):
+    pass
+
+
+def split_data_to_batch(data):
+    batches = []
+    start = 0
+    it = int(floor(len(data)/ BATCH))
+    for i in range(it):
+        batches.append(data[start:start+BATCH])
+        start += BATCH
+    batches.append(data[start:len(data)-1])
+    return batches
+
+
+def initialize_nn_params(nn_type):
+    global PARAMS
+    if nn_type in ['b', 'd']:
+        initialize_char_dictionaries()
+        PARAMS["cvsize"] = len(CHARS)
+    elif nn_type is 'c':
+        initialize_pref_suff()
+
+
+def initialize_neural_network(nn_type):
     model = dy.Model()
+    initialize_nn_params(nn_type)
+    layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize = PARAMS["layers"],PARAMS["em_dim"],PARAMS["in_dim"],\
+                                                                 PARAMS["lstm_dim"], PARAMS["tags_size"],\
+                                                                 PARAMS["vsize"], PARAMS["cvsize"]
+    if nn_type is 'a':
+        return A(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model)
+    elif nn_type is 'b':
+        return B(layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model)
+    elif nn_type is 'c':
+        return C(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model, P2I, S2I)
+    else:
+        return D(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize, model)
 
 
 def init_fix():
@@ -44,30 +124,25 @@ def initialize_pref_suff():
     I2S, S2I = index_set(suff)
 
 
-
 def initialize_char_dictionaries():
     global CHARS, I2C, C2I
     for word in WORDS:
         for c in word:
             CHARS.add(c)
     I2C, C2I = index_set(CHARS)
+    global PARAMS
+    PARAMS["cvsize"] = len(CHARS)
 
 
-def initialize_globals(tag_type, nn_type):
-    global SEPARATOR
+def initialize_globals(tag_type):
+    global SEPARATOR, PARAMS
     if tag_type.lower() == "ner":
         SEPARATOR = "\t"
     else:
         SEPARATOR = " "
-
-
-
-def word_to_prefix(w):
-    return w[0:PREF_LENGTH]
-
-
-def word_to_suffix(w):
-    return w[-SUFF_LENGTH:]
+    config_fd = open("config.json","r")
+    PARAMS = json.load(config_fd)
+    config_fd.close()
 
 
 def index_set(set_to_dict):
@@ -78,16 +153,19 @@ def index_set(set_to_dict):
     return i2s, s2i
 
 
-def initialize_dicts():
+def initialize_words_tags():
+    global PARAMS
     global T2I, I2T, W2I, I2W
     I2T, T2I = index_set(TAGS)
     I2W, W2I = index_set(WORDS)
+    PARAMS["vsize"] = len(WORDS)
+    PARAMS["tags_size"] = len(TAGS)
 
 
 def read_train_and_dev(ftrain, fdev):
     train_data = read_data(ftrain)
     dev_data = read_data(fdev, is_train=False)
-    initialize_dicts()
+    initialize_words_tags()
     return train_data, dev_data
 
 
