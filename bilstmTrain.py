@@ -128,11 +128,11 @@ def initialize_neural_network(nn_type):
     if nn_type is 'a':
         return A(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model)
     elif nn_type is 'b':
-        return B(layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model)
+        return B(layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model, I2W, C2I)
     elif nn_type is 'c':
         return C(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model, P2I, S2I)
     else:
-        return D(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize, model)
+        return D(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize, model, I2W, C2I)
 
 
 def init_fix():

@@ -101,53 +101,56 @@ class WordEmbeddingDoubleBiLSTM(DoubleBiLSTM):
 
 
 class CharLevelDoubleBiLSTM(DoubleBiLSTM):
-    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model):
+    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model, in2word, char2index):
         DoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model)
         self.LSTMc = dy.LSTMBuilder(layers, em_dim, em_dim, self.model)
+        self.index2word = in2word
+        self.char2index = char2index
 
     def represent(self, input):
         init_state = self.LSTMc.initial_state()
         transduces = []
         for word in input:
-            transduces.append(init_state.transduce([dy.lookup(self.E, c) for c in word])[-1])
+            word = self.index2word[word]
+            transduces.append(init_state.transduce([dy.lookup(self.E, self.char2index[c] ) for c in word])[-1])
         return transduces
 
 
 class SubWordEmbeddingDoubleBiLSTM(DoubleBiLSTM):
-    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model, Wp2I, Ws2I):
+    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model, Wp2I, Ws2I,I2W):
         DoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model)
-        self.Epre = self.model.add_lookup_parameters(len(Wp2I), em_dim)
-        self.Esuf = self.model.add_lookup_parameters(len(Ws2I), em_dim)
+        self.Epre = self.model.add_lookup_parameters((len(Wp2I), em_dim))
+        self.Esuf = self.model.add_lookup_parameters((len(Ws2I), em_dim))
         self.Wp2I = Wp2I
         self.Ws2I = Ws2I
+        self.I2W = I2W
 
     def represent(self, input):
         representations = []
         for word in input:
             w_r = dy.lookup(self.E, word)
-            p_r = dy.lookup(self.Epre, self.Wp2I[word_to_prefix(word)])
-            s_r = dy.lookup(self.Esuf, self.Ws2I[word_to_suffix(word)])
+            p_r = dy.lookup(self.Epre, self.Wp2I[word_to_prefix(self.I2W[word])])
+            s_r = dy.lookup(self.Esuf, self.Ws2I[word_to_suffix(self.I2W[word])])
             representations.append(w_r + p_r + s_r)
         return representations
 
 
+
 class CharAndEmbeddedDoubleBiLSTM(CharLevelDoubleBiLSTM):
-    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize , model):
-        DoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model)
-        self.WE = self.model.add_lookup_parameters(vsize, em_dim)
-        self.W = self.model.add_parameters(em_dim, 2*em_dim)
-        self.b = self.model.add_parameters(em_dim)
+    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize , model,  in2word, char2index):
+        CharLevelDoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model,  in2word, char2index)
+        self.WE = self.model.add_lookup_parameters((vsize, em_dim))
+        self.W_t = self.model.add_parameters((em_dim, 2*em_dim))
+        self.b_t = self.model.add_parameters(em_dim)
 
     def represent(self, input):
-        # input is list of tuples, the first value in the tuple is a word as index,
-        # and the second is list of indexes of each char in word
-        words, chars = zip(*input)
-        chars = CharLevelDoubleBiLSTM.represent(self, list(chars))
         embedded = []
-        for word, em_char in itertools.izip(words, chars):
-            embedded.append(dy.concatenate([dy.lookup(self.WE, word), em_char]))
-        W = dy.parameter(self.W)
-        b = dy.parameter(self.b)
+        transtduces = CharLevelDoubleBiLSTM.represent(self, input)
+        for word, trans in itertools.izip(input, transtduces):
+            t = dy.concatenate([dy.lookup(self.WE, word), trans])
+            embedded.append(t)
+        W = dy.parameter(self.W_t)
+        b = dy.parameter(self.b_t)
         return [W*x+b for x in embedded]
 
 
