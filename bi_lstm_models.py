@@ -147,7 +147,6 @@ class D(BDoubleBiLSTM):
 
 def save_nn_and_data(fname, neural_net, layers, em_dim, lstm_dim, in_dim, tags_size, model, I2T, vsize=0, cvsize=0,
                            wp_index=None, ws_index=None, I2W=None, I2C=None, unk_index=-1):
-
     data_dict = {
         "NN_TYPE": neural_net.__name__,
         "PARAMETERS": {
