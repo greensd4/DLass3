@@ -1,5 +1,6 @@
 import os
 import random
+from itertools import izip
 from math import floor
 from optparse import OptionParser
 from time import time
@@ -23,7 +24,7 @@ S2I, I2S, P2I, I2P = dict(), dict(), dict(), dict()
 PARAMS = dict()
 BATCH = 500
 EPOCHS = 5
-
+IGNORED = ""
 option_parser = OptionParser()
 option_parser.add_option("-t", "--type", dest="type", help="choose POS/NER tagging (pos/ner) - default is pos tagging",
                          default="pos")
@@ -41,7 +42,7 @@ def main():
     train_data, dev_data = read_train_and_dev(ftrain, fdev)
     neural_network = initialize_neural_network(nn_type)
     trainer = dy.AdamTrainer(neural_network.model)
-    train(neural_network, trainer, train_data, dev_data)
+    train(neural_network, trainer, train_data, dev_data, IGNORED)
     save_information(fmodel, neural_network)
 
 
@@ -49,25 +50,47 @@ def save_information(fmodel, neural_network):
     save_nn_and_data(fmodel, neural_network, PARAMS, neural_network.model, I2T, P2I, S2I, I2W, I2C, UNK_INDEX)
 
 
-def train(neural_network, trainer, train_data, dev_data):
+def train(neural_network, trainer, train_data, dev_data, ignored_tag):
 
-    for i in range(EPOCHS):
+    for epoch in range(EPOCHS):
         total_loss = 0.0
         start_time = time()
-        batches = split_data_to_batch(train_data)
-        for batch in batches:
-            for sentence, tags in batch:
-                loss = dy.esum(neural_network.get_loss(sentence, tags))
-                total_loss = loss.value()
-                loss.backward()
-                trainer.update()
+        i = 0
+        acc = 0
+        for sentence, tags in train_data:
+            sentence = [W2I[w] for w in sentence]
+            tags = [T2I[t] for t in tags]
+            loss = dy.esum(neural_network.get_loss(sentence, tags))
+            total_loss += loss.value()
+            loss.backward()
+            trainer.update()
+            if i % BATCH is 0:
+                acc = accuracy(neural_network, dev_data, ignored_tag) * 100
+                avg_loss = total_loss/ len(WORDS)
+                print "BATCH: {} , ACC {:11f}, AVG LOSS {}".format(i/BATCH, acc, avg_loss)
+            i += 1
+        end_time = time()-start_time
 
-            acc = accuracy(neural_network, dev_data, ignored_tag)
-
+        print "Epoch: {}, Total Loss: {:12f}, Time: {:9f}s, ACC: {:11f}".format(epoch+1, total_loss, end_time, acc)
 
 
 def accuracy(nn, dev, ignored):
-    pass
+    correct = 0
+    total = 0.0
+    for sentence, tags in dev:
+        sentence = [W2I[w] for w in sentence]
+        tags = [T2I[t] for t in tags]
+        preds = nn.predict(sentence)
+        for p,t in zip(preds, tags):
+            if I2T[t] == ignored:
+                continue
+            elif t == p:
+                correct += 1
+            total +=1
+    return 100 * float(correct)/total
+
+
+
 
 
 def split_data_to_batch(data):
@@ -135,9 +158,10 @@ def initialize_char_dictionaries():
 
 
 def initialize_globals(tag_type):
-    global SEPARATOR, PARAMS
+    global SEPARATOR, PARAMS, IGNORED
     if tag_type.lower() == "ner":
         SEPARATOR = "\t"
+        IGNORED = "O"
     else:
         SEPARATOR = " "
     config_fd = open("config.json","r")
@@ -181,21 +205,24 @@ def read_data(fname, tagged_data=True, is_train=True):
     """
     data = []
     sentence = []
+    tags = []
     # For not tagged data
     print "Reading data from:", fname, " tagged data?", tagged_data, " is train?", is_train
     global TAGS, WORDS
     for line in file(fname):
         try:
             word, label = line.strip().split(SEPARATOR, 1)
-            sentence.append((word, label))
+            sentence.append(word)
+            tags.append(label)
             if is_train:
                 TAGS.add(label)
                 WORDS.add(word)
         except ValueError:
-            data.append(sentence)
+            data.append((sentence, tags))
             sentence = []
-    if len(sentence) is not 0 and sentence not in data:
-        data.append(sentence)
+            tags = []
+    if len(sentence) is not 0 and (sentence, tags) not in data:
+        data.append((sentence, tags))
     if is_train:
         WORDS.add(UNK)
         TAGS.add(UNK)
