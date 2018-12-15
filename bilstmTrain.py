@@ -68,8 +68,8 @@ def train(neural_network, trainer, train_data, dev_data, ignored_tag):
             num_of_words_till_now += len(sentence)
             if i % BATCH is 0:
                 acc = accuracy(neural_network, dev_data, ignored_tag) * 100
-                avg_loss = total_loss/total_words
-                print "BATCH: {} , ACC {:11f}, AVG LOSS {}".format(i/BATCH, acc, avg_loss)
+                avg_loss = total_loss/num_of_words_till_now
+                print "BATCH: {} , ACC {:2f}%, AVG LOSS {}".format(i/BATCH, acc, avg_loss)
             i += 1
         end_time = time()-start_time
 
@@ -89,7 +89,7 @@ def accuracy(nn, dev, ignored):
             elif t == p:
                 correct += 1
             total +=1
-    return 100 * float(correct)/total
+    return float(correct)/float(total)
 
 
 def get_word_index(w):
