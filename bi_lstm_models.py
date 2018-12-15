@@ -28,7 +28,7 @@ class BiLSTM:
         start_b = self.directions[BACKWARD].initial_state()
         start_f = self.directions[FORWARD].initial_state()
         out_f, out_b = start_f.transduce(sentence), start_b.transduce(rev_sentence)
-        return [dy.concatenate([backward,forward]) for backward, forward in itertools.izip([out_f, out_b])]
+        return [dy.concatenate([backward,forward]) for backward, forward in itertools.izip(out_f, out_b)]
 
 
 class DoubleBiLSTM(object):
@@ -57,7 +57,7 @@ class DoubleBiLSTM(object):
 
     def get_loss(self, input, expected):
         probs = self(input)
-        return [-dy.log(dy.pick(prob, expect)) for prob, expect in itertools.izip([probs, expected])]
+        return [-dy.log(dy.pick(prob, expect)) for prob, expect in itertools.izip(probs, expected)]
 
     def predict(self, input):
         probs = self(input)
@@ -81,7 +81,7 @@ class DoubleBiLSTM(object):
         for sentence, tags in data:
             probs = self(sentence, renew_graph=False)
             total += len(tags)
-            total_loss.extend([-dy.log(dy.pick(prob, tag)) for prob, tag in itertools.izip([probs, tags])])
+            total_loss.extend([-dy.log(dy.pick(prob, tag)) for prob, tag in itertools.izip(probs, tags)])
 
         return dy.esum(total_loss)/ total_loss
 

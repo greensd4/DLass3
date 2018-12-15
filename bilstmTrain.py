@@ -51,12 +51,13 @@ def save_information(fmodel, neural_network):
 
 
 def train(neural_network, trainer, train_data, dev_data, ignored_tag):
-
+    total_words = reduce(lambda x, y: x + len(y), train_data, 0.0)
     for epoch in range(EPOCHS):
         total_loss = 0.0
         start_time = time()
-        i = 0
+        i = 1
         acc = 0
+        num_of_words_till_now = 0
         for sentence, tags in train_data:
             sentence = [W2I[w] for w in sentence]
             tags = [T2I[t] for t in tags]
@@ -64,9 +65,10 @@ def train(neural_network, trainer, train_data, dev_data, ignored_tag):
             total_loss += loss.value()
             loss.backward()
             trainer.update()
+            num_of_words_till_now += len(sentence)
             if i % BATCH is 0:
                 acc = accuracy(neural_network, dev_data, ignored_tag) * 100
-                avg_loss = total_loss/ len(WORDS)
+                avg_loss = total_loss/total_words
                 print "BATCH: {} , ACC {:11f}, AVG LOSS {}".format(i/BATCH, acc, avg_loss)
             i += 1
         end_time = time()-start_time
@@ -78,7 +80,7 @@ def accuracy(nn, dev, ignored):
     correct = 0
     total = 0.0
     for sentence, tags in dev:
-        sentence = [W2I[w] for w in sentence]
+        sentence = [get_word_index(w) for w in sentence]
         tags = [T2I[t] for t in tags]
         preds = nn.predict(sentence)
         for p,t in zip(preds, tags):
@@ -90,7 +92,11 @@ def accuracy(nn, dev, ignored):
     return 100 * float(correct)/total
 
 
-
+def get_word_index(w):
+    try:
+        return W2I[w]
+    except KeyError:
+        return W2I[UNK]
 
 
 def split_data_to_batch(data):
