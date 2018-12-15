@@ -23,7 +23,7 @@ I2C, C2I = dict(), dict()
 S2I, I2S, P2I, I2P = dict(), dict(), dict(), dict()
 PARAMS = dict()
 BATCH = 500
-EPOCHS = 5
+EPOCHS = 1
 IGNORED = ""
 option_parser = OptionParser()
 option_parser.add_option("-t", "--type", dest="type", help="choose POS/NER tagging (pos/ner) - default is pos tagging",
@@ -42,11 +42,12 @@ def main():
     train_data, dev_data = read_train_and_dev(ftrain, fdev)
     neural_network = initialize_neural_network(nn_type)
     trainer = dy.AdamTrainer(neural_network.model)
-    train(neural_network, trainer, train_data, dev_data, IGNORED)
+    # train(neural_network, trainer, train_data, dev_data, IGNORED)
     save_information(fmodel, neural_network)
 
 
 def save_information(fmodel, neural_network):
+    print neural_network.__class__.__name__
     save_nn_and_data(fmodel, neural_network, PARAMS, neural_network.model, I2T, P2I, S2I, I2W, I2C, UNK_INDEX)
 
 
@@ -68,13 +69,14 @@ def train(neural_network, trainer, train_data, dev_data, ignored_tag):
             num_of_words_till_now += len(sentence)
             if i % BATCH is 0:
                 acc = accuracy(neural_network, dev_data, ignored_tag) * 100
-                avg_loss = total_loss/num_of_words_till_now
+                avg_loss = total_loss / num_of_words_till_now
                 print "BATCH: {} , ACC {:2f}%, AVG LOSS {}".format(i/BATCH, acc, avg_loss)
             i += 1
+
         end_time = time()-start_time
-
+        avg_loss = total_loss / total_words
         print "Epoch: {}, Total Loss: {:12f}, Time: {:9f}s, ACC: {:11f}".format(epoch+1, total_loss, end_time, acc)
-
+        print "AVG LOSS ", avg_loss
 
 def accuracy(nn, dev, ignored):
     correct = 0
@@ -130,7 +132,7 @@ def initialize_neural_network(nn_type):
     elif nn_type is 'b':
         return B(layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model, I2W, C2I)
     elif nn_type is 'c':
-        return C(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model, P2I, S2I)
+        return C(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model, P2I, S2I, I2W)
     else:
         return D(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize, model, I2W, C2I)
 
