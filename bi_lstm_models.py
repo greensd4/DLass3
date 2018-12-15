@@ -154,7 +154,7 @@ class CharAndEmbeddedDoubleBiLSTM(CharLevelDoubleBiLSTM):
         return [W*x+b for x in embedded]
 
 
-def save_nn_and_data(fname, neural_net, params, model, I2T, wp_index, ws_index, I2W, I2C, unk_index):
+def save_nn_and_data(fname, neural_net, params, model, I2T, wp_index, ws_index,W2I, C2I, I2W, I2C, unk_index):
     data_dict = {
         "NN_TYPE": neural_net.__class__.__name__,
         "PARAMETERS": {
@@ -171,6 +171,8 @@ def save_nn_and_data(fname, neural_net, params, model, I2T, wp_index, ws_index, 
         "WORDS_LIST": {
             "I2W": I2W,
             "I2C": I2C,
+            "W2I": W2I,
+            "C2I": C2I,
             "WS_INDEX":ws_index,
             "WP_INDEX":wp_index
         },
@@ -184,7 +186,7 @@ def save_nn_and_data(fname, neural_net, params, model, I2T, wp_index, ws_index, 
     data_fd.close()
 
 
-def load_nn_and_data(fname):
+def load_nn_and_data(fname, nn):
     data_fd = open(fname + "_data", 'r')
     loader = json.load(data_fd)
 
@@ -197,25 +199,25 @@ def load_nn_and_data(fname):
     lstm_dim, vsize,cvsize = params["LSTM_DIM"], params["VSIZE"], params["CVSIZE"]
     layers, in_dim, em_dim, tags_size = params["LAYERS"], params["IN_DIM"], params["EM_DIM"], params["TAGS_SIZE"]
     I2W, I2C, ws_index, wp_index = words_list["I2W"], words_list["I2C"], words_list["WS_INDEX"], words_list["WP_INDEX"]
-    C2I = {(v,k) for k,v in I2C.items()}
+    C2I, W2I = words_list["C2I"], words_list["W2I"]
     model = loader["MODEL"]
     if model == dy.Model.__name__:
         model = dy.Model()
     else:
         model = dy.Model()
-    if nn_type == WordEmbeddingDoubleBiLSTM.__name__:  # Option (a)
+    if nn == 'a':  # Option (a)
         net = WordEmbeddingDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, len(I2W), model)
 
-    elif nn_type == CharLevelDoubleBiLSTM.__name__:  # Option (b)
+    elif nn == 'b':  # Option (b)
         net = CharLevelDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model, I2W, C2I)
 
-    elif nn_type == SubWordEmbeddingDoubleBiLSTM.__name__:
+    elif nn == 'c':
         net = SubWordEmbeddingDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, len(I2W), model, wp_index, ws_index, I2W)
     else:
         net = CharAndEmbeddedDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize, model, I2W, C2I)
 
     net.load_model(fname)  # loads the parameter collection
-    return net, tags, I2W, I2C, unk_index
+    return net, tags, W2I, C2I, unk_index
 
 
 

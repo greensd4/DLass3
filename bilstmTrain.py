@@ -42,7 +42,7 @@ def main():
     train_data, dev_data = read_train_and_dev(ftrain, fdev)
     neural_network = initialize_neural_network(nn_type)
     trainer = dy.AdamTrainer(neural_network.model)
-    # train(neural_network, trainer, train_data, dev_data, IGNORED)
+    train(neural_network, trainer, train_data, dev_data, IGNORED)
     save_information(fmodel, neural_network)
 
 
