@@ -1,6 +1,5 @@
 import numpy as np
 import dynet as dy
-import cPickle
 import itertools
 import json
 
@@ -76,7 +75,6 @@ class DoubleBiLSTM(object):
             total_loss.extend([-dy.log(dy.pick(prob, tag)) for prob, tag in itertools.izip([probs, tags])])
 
         return dy.esum(total_loss)/ total_loss
-
 
     def save_model(self, fname):
         self.model.save(fname)
@@ -209,3 +207,4 @@ def load_nn_and_data(fname):
     return net, tags, I2W, I2C, unk_index
 
 
+def if __name__ == '__main__':

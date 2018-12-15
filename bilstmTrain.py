@@ -7,10 +7,13 @@ T2I, I2T, W2I, I2W = dict(), dict(), dict(), dict()
 SUFF_LENGTH , PREF_LENGTH = 3, 3
 
 option_parser = OptionParser()
+option_parser.add_option("-t", "--type", dest="type", help="choose POS/NER tagging (pos/ner) - default is pos tagging",
+                         default="pos")
 option_parser.add_option("-d", "--dev", help="dev file name", dest="dev", default="dev")
 
 def main():
     options, args = option_parser.parse_args()
+
 
 def word_to_prefix(w):
     return w[0:PREF_LENGTH]
