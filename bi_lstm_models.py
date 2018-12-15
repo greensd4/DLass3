@@ -180,7 +180,6 @@ def save_nn_and_data(fname, neural_net, params, model, I2T, wp_index, ws_index,W
         "TAGS": I2T,
         "UNK": unk_index
     }
-    print data_dict.__str__()
     neural_net.save_model(fname)
     data_fd = open(fname+"_data", 'w')
     json.dump(data_dict, data_fd)

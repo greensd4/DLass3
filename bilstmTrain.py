@@ -17,7 +17,7 @@ from bi_lstm_models import save_nn_and_data
 UNK = "UUUNKKK"
 SEPARATOR = " "
 UNK_INDEX = -1
-WORDS, TAGS , CHARS = set(), set(), set()
+WORDS, TAGS, CHARS = set(), set(), set()
 T2I, I2T, W2I, I2W = dict(), dict(), dict(), dict()
 I2C, C2I = dict(), dict()
 S2I, I2S, P2I, I2P = dict(), dict(), dict(), dict()
@@ -25,6 +25,7 @@ PARAMS = dict()
 BATCH = 500
 EPOCHS = 1
 IGNORED = ""
+
 option_parser = OptionParser()
 option_parser.add_option("-t", "--type", dest="type", help="choose POS/NER tagging (pos/ner) - default is pos tagging",
                          default="pos")
@@ -48,7 +49,7 @@ def main():
 
 def save_information(fmodel, neural_network):
     print neural_network.__class__.__name__
-    save_nn_and_data(fmodel, neural_network, PARAMS, neural_network.model, I2T, P2I, S2I, I2W, I2C, UNK_INDEX)
+    save_nn_and_data(fmodel, neural_network, PARAMS, neural_network.model, I2T, P2I, S2I,W2I, C2I, I2W, I2C, UNK_INDEX)
 
 
 def train(neural_network, trainer, train_data, dev_data, ignored_tag):
