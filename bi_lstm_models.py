@@ -2,6 +2,7 @@ import numpy as np
 import dynet as dy
 import cPickle
 import itertools
+import json
 
 BACKWARD = "BACKWARD"
 FORWARD = "FORWARD"
@@ -22,7 +23,7 @@ class BiLSTM:
         return [dy.concatenate([backward,forward]) for backward, forward in itertools.izip([out_f, out_b])]
 
 
-class DoubleBiLSTM:
+class DoubleBiLSTM(object):
     def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model):
         self._biLSTM_first = BiLSTM(layers, em_dim, lstm_dim, model)
         self._biLSTM_second = BiLSTM(layers, 2*lstm_dim, in_dim, model)
@@ -77,10 +78,10 @@ class DoubleBiLSTM:
         return dy.esum(total_loss)/ total_loss
 
 
-    def save(self, fname):
+    def save_model(self, fname):
         self.model.save(fname)
 
-    def load(self, fname):
+    def load_model(self, fname):
         self.model.populate(fname)
 
 
@@ -92,9 +93,10 @@ class WordEmbeddingDoubleBiLSTM(DoubleBiLSTM):
         return [dy.lookup(self.E, i) for i in input]
 
 
+
 class BDoubleBiLSTM(DoubleBiLSTM):
-    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model):
-        DoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model)
+    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model):
+        DoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model)
         self.LSTMc = dy.LSTMBuilder(layers, em_dim, em_dim, self.model)
 
     def represent(self, input):
@@ -142,8 +144,69 @@ class D(BDoubleBiLSTM):
 
 
 
-if __name__ == '__main__':
-    s = [(5,[1, 2 ,3]),(6, [7,8,9])]
-    w, c = zip(*s)
-    print w
-    print c
+
+def save_nn_and_data(fname, neural_net, layers, em_dim, lstm_dim, in_dim, tags_size, model, I2T, vsize=0, cvsize=0,
+                           wp_index=None, ws_index=None, I2W=None, I2C=None, unk_index=-1):
+
+    data_dict = {
+        "NN_TYPE": neural_net.__name__,
+        "PARAMETERS": {
+            "LAYERS":layers,
+            "EM_DIM": em_dim,
+            "LSTM_DIM" :lstm_dim,
+            "IN_DIM":in_dim,
+            "TAGS_SIZE": tags_size,
+            "VSIZE": vsize,
+            "CVSIZE":cvsize,
+            "MODEL":model.__name__
+        },
+        "WORDS_LIST": {
+            "I2W": I2W,
+            "I2C": I2C,
+            "WS_INDEX":ws_index,
+            "WP_INDEX":wp_index
+        },
+        "TAGS": I2T,
+        "UNK": unk_index
+    }
+    data = json.loads(data_dict.__str__())
+    neural_net.save_model(fname)
+    data_fd = open(fname+"_data", 'w')
+    json.dump(data, data_fd)
+    data_fd.close()
+
+
+def load_nn_and_data(fname):
+    data_fd = open(fname + "_data", 'r')
+    loader = json.load(data_fd)
+
+    params = loader["PARAMETERS"]
+    words_list = loader["WORDS_LIST"]
+    nn_type = loader["NN_TYPE"]
+    unk_index = loader["UNK"]
+    tags = loader["TAGS"]
+
+    lstm_dim, vsize,cvsize = params["LSTM_DIM"], params["VSIZE"], params["CVSIZE"]
+    layers, in_dim, em_dim, tags_size = params["LAYERS"], params["IN_DIM"], params["EM_DIM"], params["TAGS_SIZE"]
+    I2W, I2C, ws_index, wp_index = words_list["I2W"], words_list["I2c"], words_list["WS_INDEX"], words_list["WP_INDEX"]
+
+    model = params["MODEL"]
+    if model == dy.Model.__name__:
+        model = dy.Model()
+    else:
+        model = dy.Model()
+    if nn_type == WordEmbeddingDoubleBiLSTM.__name__:  # Option (a)
+        net = WordEmbeddingDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, len(I2W), model)
+
+    elif nn_type == BDoubleBiLSTM.__name__:  # Option (b)
+        net = BDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model)
+
+    elif nn_type == C.__name__:
+        net = C(layers, em_dim, in_dim, lstm_dim, tags_size, len(I2W), model, wp_index, ws_index)
+    else:
+        net = D(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize, model=model)
+
+    net.load_model(fname)  # loads the parameter collection
+    return net, tags, I2W, I2C, unk_index
+
+
