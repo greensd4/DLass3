@@ -7,6 +7,9 @@ SEPARATOR = " "
 UNK = "UUUNKKK"
 
 
+option_parser.add_option("-t", "--type", dest="type", help="choose POS/NER tagging (pos/ner) - default is pos tagging",
+                         default="pos")
+
 def main():
     (options, args) = option_parser.parse_args()
     nn_type , model_file, test_file = args
@@ -18,13 +21,12 @@ def main():
         tags_pred = net.predict(sentence)
         tags_pred = [tags[t] for t in tags_pred]
         total_tags = total_tags + tags_pred
-    save_predictions(test_file, "test4"+options.type, total_tags)
+    save_predictions(test_file, "test4."+options.type, total_tags)
 
 
 def read_data(test_file):
     data = []
     sentence = []
-    tags = []
     # For not tagged data
     print "Reading data from:", test_file
     for word in file(test_file):

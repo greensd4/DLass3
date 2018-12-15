@@ -53,7 +53,8 @@ class DoubleBiLSTM(object):
         representation = self.represent(sentence)
         result1 = self._biLSTM_first(representation)
         result2 = self._biLSTM_second(result1)
-        return self.mlp(result2)
+        b = self.mlp(result2)
+        return b
 
     def get_loss(self, input, expected):
         probs = self(input)

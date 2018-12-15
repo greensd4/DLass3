@@ -1,7 +1,7 @@
 {
     "layers": 1,
     "em_dim": 64,
-    "in_dim": 32,
+    "in_dim": 64,
     "lstm_dim": 32,
     "tags_size": 0,
     "vsize": 0,

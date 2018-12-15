@@ -238,9 +238,5 @@ def read_data(fname, tagged_data=True, is_train=True):
     return data
 
 
-
-
-
-
 if __name__ == '__main__':
    main()
