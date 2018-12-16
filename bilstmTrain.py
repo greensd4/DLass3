@@ -21,7 +21,7 @@ I2C, C2I = dict(), dict()
 S2I, I2S, P2I, I2P = dict(), dict(), dict(), dict()
 PARAMS = dict()
 BATCH = 500
-EPOCHS = 1
+EPOCHS = 5
 IGNORED = ""
 
 option_parser = OptionParser()
@@ -53,7 +53,7 @@ def save_information(fmodel, neural_network):
 
 def train(neural_network, trainer, train_data, dev_data, ignored_tag,repr):
     total_words = reduce(lambda x, y: x + len(y), train_data, 0.0)
-    for epoch in range(1):
+    for epoch in range(EPOCHS):
         total_loss = 0.0
         start_time = time()
         i = 1
