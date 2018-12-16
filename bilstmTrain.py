@@ -25,8 +25,8 @@ EPOCHS = 5
 IGNORED = ""
 
 option_parser = OptionParser()
-option_parser.add_option("-t", "--type", dest="type", help="choose POS/NER tagging (pos/ner) - default is pos tagging",
-                         default="pos")
+option_parser.add_option("-t", "--type", dest="type", help="choose POS/NER tagging (pos/ner) - REQUIRED",
+                         default=None)
 option_parser.add_option("-d", "--dev", help="dev file name", dest="dev", default="dev")
 
 
@@ -53,6 +53,7 @@ def save_information(fmodel, neural_network):
 
 def train(neural_network, trainer, train_data, dev_data, ignored_tag,repr):
     total_words = reduce(lambda x, y: x + len(y), train_data, 0.0)
+    sentences_accuracy_graph = []
     for epoch in range(EPOCHS):
         total_loss = 0.0
         start_time = time()
@@ -60,7 +61,6 @@ def train(neural_network, trainer, train_data, dev_data, ignored_tag,repr):
         acc = 0
         num_of_words_till_now = 0
         num_of_sentenes_till_now = 0
-        sentences_accuracy_graph = []
         for sentence, tags in train_data:
             sentence = [W2I[w] for w in sentence]
             tags = [T2I[t] for t in tags]
@@ -210,6 +210,8 @@ def initialize_char_dictionaries():
 
 
 def initialize_globals(tag_type):
+    if tag_type is None:
+        option_parser.exit(status=-1, msg="ERROR: You must enter tagging type!")
     global SEPARATOR, PARAMS, IGNORED
     if tag_type.lower() == "ner":
         SEPARATOR = "\t"
