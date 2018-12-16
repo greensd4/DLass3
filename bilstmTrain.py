@@ -2,7 +2,7 @@ import os
 from math import floor
 from optparse import OptionParser
 from time import time
-
+import matplotlib.pyplot as plt
 import dynet as dy
 import json
 from bi_lstm_models import WordEmbeddingDoubleBiLSTM as A
@@ -31,6 +31,8 @@ option_parser.add_option("-d", "--dev", help="dev file name", dest="dev", defaul
 
 
 def main():
+    #stats = read_stats_from_file('stat_file')
+    #graph_from_stats(stats)
     options, args = option_parser.parse_args()
     nn_type, ftrain, fmodel = args
     if options.dev == 'dev':
@@ -41,23 +43,24 @@ def main():
     train_data, dev_data = read_train_and_dev(ftrain, fdev)
     neural_network = initialize_neural_network(nn_type)
     trainer = dy.AdamTrainer(neural_network.model)
-    train(neural_network, trainer, train_data, dev_data, IGNORED)
+    train(neural_network, trainer, train_data, dev_data, IGNORED, str(nn_type))
     save_information(fmodel, neural_network)
 
 
 def save_information(fmodel, neural_network):
-    print neural_network.__class__.__name__
     save_nn_and_data(fmodel, neural_network, PARAMS, neural_network.model, I2T, P2I, S2I,W2I, C2I, I2W, I2C, UNK_INDEX)
 
 
-def train(neural_network, trainer, train_data, dev_data, ignored_tag):
+def train(neural_network, trainer, train_data, dev_data, ignored_tag,repr):
     total_words = reduce(lambda x, y: x + len(y), train_data, 0.0)
-    for epoch in range(EPOCHS):
+    for epoch in range(1):
         total_loss = 0.0
         start_time = time()
         i = 1
         acc = 0
         num_of_words_till_now = 0
+        num_of_sentenes_till_now = 0
+        sentences_accuracy_graph = []
         for sentence, tags in train_data:
             sentence = [W2I[w] for w in sentence]
             tags = [T2I[t] for t in tags]
@@ -67,15 +70,56 @@ def train(neural_network, trainer, train_data, dev_data, ignored_tag):
             trainer.update()
             num_of_words_till_now += len(sentence)
             if i % BATCH is 0:
-                acc = accuracy(neural_network, dev_data, ignored_tag) * 100
+                acc = accuracy(neural_network, dev_data, ignored_tag)
                 avg_loss = total_loss / num_of_words_till_now
-                print "BATCH: {} , ACC {:2f}%, AVG LOSS {}".format(i/BATCH, acc, avg_loss)
+                print "BATCH: {} , ACC {:2f}%, AVG LOSS {}".format(i/BATCH, acc*100, avg_loss)
             i += 1
 
+        num_of_sentenes_till_now += i
         end_time = time()-start_time
         avg_loss = total_loss / total_words
-        print "Epoch: {}, Total Loss: {:12f}, Time: {:9f}s, ACC: {:11f}".format(epoch+1, total_loss, end_time, acc)
+        print "Epoch: {}, Total Loss: {:12f}, Time: {:9f}s, ACC: {:11f}".format(epoch+1, total_loss, end_time, acc*100)
         print "AVG LOSS ", avg_loss
+        sentences_accuracy_graph.append((float(num_of_sentenes_till_now / 100), acc))
+    write_stats_to_file(sentences_accuracy_graph, repr)
+
+
+def write_stats_to_file(stats,repr):
+    print "writing train stats to file"
+    stat_file = open('stat_file', 'a+')
+    stat_file.write(repr + ':')
+    for num_sentences,accuracy in stats:
+        stat_file.write(str(num_sentences) + '\t' + str(accuracy) + ',')
+    stat_file.write('\n')
+    #examples to write to file without runnning train.
+    #stat_file.write('a:4643\t0.9443,4800\t0.9223,4456\t0.9256,5432\t0.9545,\n')
+    #stat_file.write('b:5643\t0.9543,4000\t0.9123,3456\t0.9456,5432\t0.9345,\n')
+    #stat_file.write('b:5243\t0.9543,5400\t0.9423,2356\t0.9356,4832\t0.9445,\n')
+    stat_file.close()
+
+
+def read_stats_from_file(stats_file):
+    stats_fd = open(stats_file, 'r')
+    stats = {}
+    for line in stats_fd.readlines():
+        key,val = line.split(':')
+        stats[key] = []
+        curr_stat = val.strip().split(',')[:-1]
+        for stat in curr_stat:
+            num_sentences, acc = stat.strip().split('\t')
+            stats[key].append((num_sentences, acc))
+    stats_fd.close()
+    return stats
+
+
+def graph_from_stats(stats):
+    for key in stats.keys():
+        l = stats[key]
+        x,y = zip(*l)
+        plt.plot(x,y,label=key)
+        plt.pause(0.05)
+    plt.legend()
+    plt.show(plt)
 
 
 def accuracy(nn, dev, ignored):
