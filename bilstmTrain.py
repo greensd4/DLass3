@@ -31,8 +31,6 @@ option_parser.add_option("-d", "--dev", help="dev file name", dest="dev", defaul
 
 
 def main():
-    #stats = read_stats_from_file('stat_file')
-    #graph_from_stats(stats)
     options, args = option_parser.parse_args()
     nn_type, ftrain, fmodel = args
     if options.dev == 'dev':
@@ -54,6 +52,8 @@ def save_information(fmodel, neural_network):
 def train(neural_network, trainer, train_data, dev_data, ignored_tag,repr):
     total_words = reduce(lambda x, y: x + len(y), train_data, 0.0)
     sentences_accuracy_graph = []
+    print len(train_data)
+    print "Training with ", EPOCHS, " epochs"
     for epoch in range(EPOCHS):
         total_loss = 0.0
         start_time = time()
@@ -88,13 +88,9 @@ def write_stats_to_file(stats,repr):
     print "writing train stats to file"
     stat_file = open('stat_file', 'a+')
     stat_file.write(repr + ':')
-    for num_sentences,accuracy in stats:
+    for num_sentences, accuracy in stats:
         stat_file.write(str(num_sentences) + '\t' + str(accuracy) + ',')
     stat_file.write('\n')
-    #examples to write to file without runnning train.
-    #stat_file.write('a:4643\t0.9443,4800\t0.9223,4456\t0.9256,5432\t0.9545,\n')
-    #stat_file.write('b:5643\t0.9543,4000\t0.9123,3456\t0.9456,5432\t0.9345,\n')
-    #stat_file.write('b:5243\t0.9543,5400\t0.9423,2356\t0.9356,4832\t0.9445,\n')
     stat_file.close()
 
 
@@ -171,14 +167,15 @@ def initialize_neural_network(nn_type):
     layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize = PARAMS["layers"],PARAMS["em_dim"],PARAMS["in_dim"],\
                                                                  PARAMS["lstm_dim"], PARAMS["tags_size"],\
                                                                  PARAMS["vsize"], PARAMS["cvsize"]
+
     if nn_type is 'a':
         return A(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model)
     elif nn_type is 'b':
-        return B(layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model, I2W, C2I)
+        return B(layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model, I2W, C2I, UNK_INDEX)
     elif nn_type is 'c':
-        return C(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model, P2I, S2I, I2W)
+        return C(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model, P2I, S2I, I2W, UNK_INDEX)
     else:
-        return D(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize, model, I2W, C2I)
+        return D(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize, model, I2W, C2I, UNK_INDEX)
 
 
 def init_fix():
@@ -236,6 +233,8 @@ def initialize_words_tags():
     global T2I, I2T, W2I, I2W
     I2T, T2I = index_set(TAGS)
     I2W, W2I = index_set(WORDS)
+    global UNK_INDEX
+    UNK_INDEX = W2I[UNK]
     PARAMS["vsize"] = len(WORDS)
     PARAMS["tags_size"] = len(TAGS)
 

@@ -17,14 +17,19 @@ def word_to_suffix(w):
 
 
 class BiLSTM:
+    """
+    our class for computing bi-lstm
+    """
     def __init__(self, layers, em_dim, lstm_dim, model):
         self.directions = {
+            # Create 2 lstm builders one forward the other backword
             BACKWARD: dy.LSTMBuilder(layers, em_dim, lstm_dim, model),
             FORWARD: dy.LSTMBuilder(layers, em_dim, lstm_dim, model)
         }
 
     def __call__(self, sentence):
         rev_sentence = sentence[::-1]
+        # compute each direction
         start_b = self.directions[BACKWARD].initial_state()
         start_f = self.directions[FORWARD].initial_state()
         out_f, out_b = start_f.transduce(sentence), start_b.transduce(rev_sentence)
@@ -32,6 +37,9 @@ class BiLSTM:
 
 
 class DoubleBiLSTM(object):
+    """
+    our class for 2 layers of bi-lstm.
+    """
     def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model):
         self._biLSTM_first = BiLSTM(layers, em_dim, lstm_dim, model)
         self._biLSTM_second = BiLSTM(layers, 2*lstm_dim, in_dim, model)
@@ -64,28 +72,6 @@ class DoubleBiLSTM(object):
         probs = self(input)
         return [np.argmax(prob.npvalue()) for prob in probs]
 
-    def batch_predictions(self, data):
-        dy.renew_cg()
-        probabilities = []
-        all_probs = []
-        for sentence in data:
-            predictions = self(sentence, renew_graph=False)
-            probabilities.append(predictions)
-            all_probs.extend(predictions)
-        dy.forward()
-        return [[np.argmax(word.npvalue()) for word in sentence] for sentence in probabilities]
-
-    def batch_loss(self, data):
-        total_loss = []
-        total = 0.0
-        dy.renew_cg()
-        for sentence, tags in data:
-            probs = self(sentence, renew_graph=False)
-            total += len(tags)
-            total_loss.extend([-dy.log(dy.pick(prob, tag)) for prob, tag in itertools.izip(probs, tags)])
-
-        return dy.esum(total_loss)/ total_loss
-
     def save_model(self, fname):
         self.model.save(fname)
 
@@ -94,6 +80,9 @@ class DoubleBiLSTM(object):
 
 
 class WordEmbeddingDoubleBiLSTM(DoubleBiLSTM):
+    """
+    Word embedding double bi-lstm. computing lstm word by word.
+    """
     def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model):
         DoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model)
 
@@ -102,43 +91,66 @@ class WordEmbeddingDoubleBiLSTM(DoubleBiLSTM):
 
 
 class CharLevelDoubleBiLSTM(DoubleBiLSTM):
-    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model, in2word, char2index):
+    """
+    char level double bi-lstm , computing lstm for each char in a word.
+    """
+    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model, in2word, char2index, unk_index):
         DoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model)
         self.LSTMc = dy.LSTMBuilder(layers, em_dim, em_dim, self.model)
         self.index2word = in2word
         self.char2index = char2index
+        self.unk_index = unk_index
 
     def represent(self, input):
         init_state = self.LSTMc.initial_state()
         transduces = []
         for word in input:
-            word = self.index2word[word]
-            transduces.append(init_state.transduce([dy.lookup(self.E, self.char2index[c] ) for c in word])[-1])
+            word = self.index_to_word(word)
+            transduces.append(init_state.transduce([dy.lookup(self.E, self.char2index[c]) for c in word])[-1])
         return transduces
+
+    def index_to_word(self, index):
+        try:
+            return self.index2word[index]
+        except KeyError:
+            return self.index2word[self.unk_index]
 
 
 class SubWordEmbeddingDoubleBiLSTM(DoubleBiLSTM):
-    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model, Wp2I, Ws2I,I2W):
+    """
+    Computing lstm for word after creating its lstm for prefix and suffix.
+    """
+    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model, Wp2I, Ws2I,I2W, unk_index):
         DoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, model)
         self.Epre = self.model.add_lookup_parameters((len(Wp2I), em_dim))
         self.Esuf = self.model.add_lookup_parameters((len(Ws2I), em_dim))
         self.Wp2I = Wp2I
         self.Ws2I = Ws2I
         self.I2W = I2W
+        self.unk_index = unk_index
 
     def represent(self, input):
         representations = []
         for word in input:
             w_r = dy.lookup(self.E, word)
-            p_r = dy.lookup(self.Epre, self.Wp2I[word_to_prefix(self.I2W[word])])
-            s_r = dy.lookup(self.Esuf, self.Ws2I[word_to_suffix(self.I2W[word])])
+            p_r = dy.lookup(self.Epre, self.Wp2I[word_to_prefix(self.index_to_word(word))])
+            s_r = dy.lookup(self.Esuf, self.Ws2I[word_to_suffix(self.index_to_word(word))])
             representations.append(w_r + p_r + s_r)
         return representations
 
+    def index_to_word(self, index):
+        try:
+            return self.I2W[index]
+        except KeyError:
+            return self.I2W[self.unk_index]
+
 
 class CharAndEmbeddedDoubleBiLSTM(CharLevelDoubleBiLSTM):
-    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize , model,  in2word, char2index):
-        CharLevelDoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model,  in2word, char2index)
+    """
+    Computing for each word after computing for each char in a word.
+    """
+    def __init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize , model,  in2word, char2index, unk_index):
+        CharLevelDoubleBiLSTM.__init__(self, layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model,  in2word, char2index, unk_index)
         self.WE = self.model.add_lookup_parameters((vsize, em_dim))
         self.W_t = self.model.add_parameters((em_dim, 2*em_dim))
         self.b_t = self.model.add_parameters(em_dim)
@@ -208,12 +220,12 @@ def load_nn_and_data(fname, nn):
         net = WordEmbeddingDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, len(I2W), model)
 
     elif nn == 'b':  # Option (b)
-        net = CharLevelDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model, I2W, C2I)
+        net = CharLevelDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, cvsize, model, I2W, C2I, unk_index)
 
     elif nn == 'c':
-        net = SubWordEmbeddingDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, len(I2W), model, wp_index, ws_index, I2W)
+        net = SubWordEmbeddingDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, len(I2W), model, wp_index, ws_index, I2W, unk_index)
     else:
-        net = CharAndEmbeddedDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize, model, I2W, C2I)
+        net = CharAndEmbeddedDoubleBiLSTM(layers, em_dim, in_dim, lstm_dim, tags_size, vsize, cvsize, model, I2W, C2I, unk_index)
 
     net.load_model(fname)  # loads the parameter collection
     return net, tags, W2I, C2I, unk_index

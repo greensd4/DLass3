@@ -1,11 +1,11 @@
 import dynet as dy
 from optparse import OptionParser
 from bi_lstm_models import load_nn_and_data
-option_parser = OptionParser()
+
 SEPARATOR = " "
 UNK = "UUUNKKK"
 
-
+option_parser = OptionParser()
 option_parser.add_option("-t", "--type", dest="type", help="choose POS/NER tagging (pos/ner) - REQUIRED",
                          default=None)
 
