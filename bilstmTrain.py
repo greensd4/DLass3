@@ -91,6 +91,7 @@ def write_stats_to_file(stats,repr):
     for num_sentences,accuracy in stats:
         stat_file.write(str(num_sentences) + '\t' + str(accuracy) + ',')
     stat_file.write('\n')
+
     #examples to write to file without runnning train.
     #stat_file.write('a:4643\t0.9443,4800\t0.9223,4456\t0.9256,5432\t0.9545,\n')
     #stat_file.write('b:5643\t0.9543,4000\t0.9123,3456\t0.9456,5432\t0.9345,\n')
