@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a7270470-e14d-4925-b6a6-040320c7884d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/gen_examples.py" beforeDir="false" afterPath="$PROJECT_DIR$/gen_examples.py" afterDir="false" />
+    <list default="true" id="a7270470-e14d-4925-b6a6-040320c7884d" name="Default Changelist" comment="stats a-c">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/stat_file" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -11,28 +12,38 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/bilstmTrain.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-304">
+              <caret line="41" column="36" selection-start-line="41" selection-start-column="36" selection-end-line="41" selection-end-column="36" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/gen_examples.py">
+        <entry file="file://$PROJECT_DIR$/stat_file">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="399">
-              <caret line="81" column="18" selection-start-line="81" selection-start-column="18" selection-end-line="81" selection-end-column="18" />
+            <state relative-caret-position="76">
+              <caret line="4" selection-start-line="4" selection-end-line="4" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/double_word_examples">
+        <entry file="file://$PROJECT_DIR$/bi_lstm_models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="209">
-              <caret line="11" column="14" lean-forward="true" selection-start-line="11" selection-start-column="14" selection-end-line="11" selection-end-column="14" />
+            <state relative-caret-position="779">
+              <caret line="44" selection-start-line="44" selection-end-line="44" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
             </state>
           </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mod_examples">
-          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
@@ -67,8 +78,8 @@
         <option value="$PROJECT_DIR$/config.json" />
         <option value="$PROJECT_DIR$/bi_lstm_models.py" />
         <option value="$PROJECT_DIR$/bilstmTag.py" />
-        <option value="$PROJECT_DIR$/bilstmTrain.py" />
         <option value="$PROJECT_DIR$/gen_examples.py" />
+        <option value="$PROJECT_DIR$/bilstmTrain.py" />
       </list>
     </option>
   </component>
@@ -114,7 +125,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.gen_examples">
+  <component name="RunManager" selected="Python.bilstmTrain">
     <configuration name="bi_lstm_models" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="DLass3" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -221,11 +232,11 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.bi_lstm_models" />
-      <item itemvalue="Python.bilstmTag" />
       <item itemvalue="Python.bilstmTrain" />
       <item itemvalue="Python.experiment" />
       <item itemvalue="Python.gen_examples" />
+      <item itemvalue="Python.bi_lstm_models" />
+      <item itemvalue="Python.bilstmTag" />
     </list>
     <recent_temporary>
       <list>
@@ -352,19 +363,27 @@
       <option name="project" value="LOCAL" />
       <updated>1544902784961</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="stats a-c">
+      <created>1544996644968</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1544996644968</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
+  <component name="TodoView" selected-index="1" />
   <component name="ToolWindowManager">
-    <frame x="0" y="-4" width="1920" height="1084" extended-state="6" />
+    <frame x="-1" y="-11" width="1922" height="1092" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24986821" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14760147" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.3291536" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.30125523" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32845187" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.30125523" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.48902822" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -402,7 +421,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="part 1" />
     <MESSAGE value="part 3" />
-    <option name="LAST_COMMIT_MESSAGE" value="part 3" />
+    <MESSAGE value="stats a-c" />
+    <option name="LAST_COMMIT_MESSAGE" value="stats a-c" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -426,6 +446,11 @@
           <url>file://$PROJECT_DIR$/bilstmTag.py</url>
           <line>14</line>
           <option name="timeStamp" value="60" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bilstmTrain.py</url>
+          <line>35</line>
+          <option name="timeStamp" value="64" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -529,16 +554,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bi_lstm_models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3180">
-          <caret line="215" column="52" selection-start-line="215" selection-start-column="52" selection-end-line="215" selection-end-column="52" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/a_pos_1_data" />
     <entry file="file:///usr/lib/python2.7/json/decoder.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -547,23 +562,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bilstmTag.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret lean-forward="true" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bilstmTrain.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="452">
-          <caret line="66" column="67" lean-forward="true" selection-start-line="66" selection-start-column="67" selection-end-line="66" selection-end-column="67" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/bilstmTag.py" />
     <entry file="file://$PROJECT_DIR$/double_word_examples">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="209">
@@ -574,13 +573,40 @@
     <entry file="file://$PROJECT_DIR$/mod_examples">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/polindrom_examples">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/gen_examples.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="399">
           <caret line="81" column="18" selection-start-line="81" selection-start-column="18" selection-end-line="81" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bilstmTrain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-304">
+          <caret line="41" column="36" selection-start-line="41" selection-start-column="36" selection-end-line="41" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bi_lstm_models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="779">
+          <caret line="44" selection-start-line="44" selection-end-line="44" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/polindrom_examples">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stat_file">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
         </state>
       </provider>
     </entry>
