@@ -3,19 +3,16 @@
   <component name="ChangeListManager">
     <list default="true" id="a7270470-e14d-4925-b6a6-040320c7884d" name="Default Changelist" comment="part 3">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/a_pos" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/a_pos_data" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/b_pos" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/b_pos_data" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/bi_lstm_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/bi_lstm_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bilstm.docx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/bilstmPredict.py" beforeDir="false" afterPath="$PROJECT_DIR$/bilstmPredict.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bilstmTrain.py" beforeDir="false" afterPath="$PROJECT_DIR$/bilstmTrain.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/challenge.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/double_word_examples" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mod_examples" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/neg_examples" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/polindrom_examples" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pos_examples" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/report1.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/report2.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/stat_file" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/c_pos" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/c_pos_data" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/d_pos" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/d_pos_data" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -24,74 +21,102 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/bilstmTrain.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="722">
-              <caret line="92" column="25" lean-forward="true" selection-start-line="92" selection-start-column="25" selection-end-line="92" selection-end-column="25" />
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/bi_lstm_models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="317">
-              <caret line="102" lean-forward="true" selection-start-line="102" selection-end-line="102" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/bilstmPredict.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="26" column="62" selection-start-line="26" selection-start-column="62" selection-end-line="26" selection-end-column="62" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/experiment.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="765">
-              <caret line="57" column="89" selection-start-line="57" selection-start-column="89" selection-end-line="57" selection-end-column="89" />
-              <folding>
-                <element signature="e#0#10#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/gen_examples.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1695">
-              <caret line="113" column="32" selection-start-line="113" selection-start-column="32" selection-end-line="113" selection-end-column="32" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/config.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.7169448">
+      <split-first>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/bilstmTrain.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="541">
+                  <caret line="44" column="44" lean-forward="true" selection-start-line="44" selection-start-column="44" selection-end-line="44" selection-end-column="44" />
+                  <folding>
+                    <element signature="e#0#9#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/d_ner_data">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="763">
+                  <caret column="869510" selection-start-column="869510" selection-end-column="869510" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/bilstmPredict.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="390">
+                  <caret line="26" column="42" selection-start-line="26" selection-start-column="42" selection-end-line="26" selection-end-column="42" />
+                  <folding>
+                    <element signature="e#0#18#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/stat_file pos">
+              <provider selected="true" editor-type-id="text-editor" />
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/bi_lstm_models.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="2850">
+                  <caret line="190" selection-start-line="190" selection-end-line="190" />
+                  <folding>
+                    <element signature="e#0#18#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file:///usr/lib/python2.7/json/__init__.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="309">
+                  <caret line="257" column="4" selection-start-line="257" selection-start-column="4" selection-end-line="257" selection-end-column="4" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/gen_examples.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="1695">
+                  <caret line="113" column="32" selection-start-line="113" selection-start-column="32" selection-end-line="113" selection-end-column="32" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/config.json">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="120">
+                  <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/stat_file_ner">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="60">
+                  <caret line="4" selection-start-line="4" selection-end-line="4" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -107,6 +132,9 @@
       <find>json</find>
       <find>index</find>
       <find>I2</find>
+      <find>UU</find>
+      <find>WS_</find>
+      <find>WP_</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -123,11 +151,11 @@
         <option value="$PROJECT_DIR$/gen_examples.py" />
         <option value="$PROJECT_DIR$/README.acceptor.txt" />
         <option value="$PROJECT_DIR$/README.bilstm.txt" />
-        <option value="$PROJECT_DIR$/bilstmPredict.py" />
         <option value="$PROJECT_DIR$/stat_file" />
         <option value="$PROJECT_DIR$/stat_file_pos" />
         <option value="$PROJECT_DIR$/bi_lstm_models.py" />
         <option value="$PROJECT_DIR$/bilstmTrain.py" />
+        <option value="$PROJECT_DIR$/bilstmPredict.py" />
       </list>
     </option>
   </component>
@@ -153,7 +181,22 @@
             <path>
               <item name="DLass3" type="b2602c69:ProjectViewProjectNode" />
               <item name="DLass3" type="462c0819:PsiDirectoryNode" />
+              <item name="ner" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DLass3" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DLass3" type="462c0819:PsiDirectoryNode" />
+              <item name="ner_data" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DLass3" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DLass3" type="462c0819:PsiDirectoryNode" />
               <item name="pos" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DLass3" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DLass3" type="462c0819:PsiDirectoryNode" />
+              <item name="pos_data" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -183,7 +226,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.bilstmTrain">
+  <component name="RunManager" selected="Python.bilstmTag">
     <configuration name="bi_lstm_models" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="DLass3" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -290,11 +333,11 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.bilstmTrain" />
       <item itemvalue="Python.bilstmTag" />
+      <item itemvalue="Python.bilstmTrain" />
       <item itemvalue="Python.experiment" />
-      <item itemvalue="Python.gen_examples" />
       <item itemvalue="Python.bi_lstm_models" />
+      <item itemvalue="Python.gen_examples" />
     </list>
     <recent_temporary>
       <list>
@@ -426,14 +469,34 @@
       <option name="project" value="LOCAL" />
       <updated>1544993739194</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="part 3">
+      <created>1545074431531</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1545074431531</updated>
+    </task>
+    <task id="LOCAL-00018" summary="part 3">
+      <created>1545074477326</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1545074477326</updated>
+    </task>
+    <task id="LOCAL-00019" summary="part 3">
+      <created>1545148716897</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1545148716897</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="58" y="-11" width="1863" height="1092" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12568009" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1523395" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -488,7 +551,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bi_lstm_models.py</url>
-          <line>214</line>
+          <line>220</line>
           <option name="timeStamp" value="58" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -505,6 +568,16 @@
           <url>file://$PROJECT_DIR$/bilstmTrain.py</url>
           <line>55</line>
           <option name="timeStamp" value="61" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bilstmPredict.py</url>
+          <line>13</line>
+          <option name="timeStamp" value="62" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bilstmTrain.py</url>
+          <line>19</line>
+          <option name="timeStamp" value="63" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -586,13 +659,6 @@
     <entry file="file://$PROJECT_DIR$/mod_examples" />
     <entry file="file://$PROJECT_DIR$/double_word_examples" />
     <entry file="file://$PROJECT_DIR$/polindrom_examples" />
-    <entry file="file:///usr/lib/python2.7/json/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="287" selection-start-line="286" selection-start-column="17" selection-end-line="290" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///usr/local/lib/python2.7/dist-packages/dyNET-0.0.0-py2.7-linux-x86_64.egg!/dynet_viz.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1920">
@@ -614,22 +680,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.bilstm.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="555">
-          <caret line="37" column="23" selection-start-line="37" selection-start-column="23" selection-end-line="37" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test4.pos">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/stat_file_pos">
+    <entry file="file://$PROJECT_DIR$/test4.pos" />
+    <entry file="file://$PROJECT_DIR$/stat_file_pos" />
+    <entry file="file://$PROJECT_DIR$/pos/dev">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
-          <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
+          <caret line="4" column="1" selection-start-line="4" selection-start-column="1" selection-end-line="4" selection-end-column="1" />
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pos/test">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/experiment.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -657,50 +718,86 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/stat_file_ner">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" selection-start-line="3" selection-end-line="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pos/dev">
-      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
-          <caret line="4" column="1" selection-start-line="4" selection-start-column="1" selection-end-line="4" selection-end-column="1" />
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pos/test">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bilstmPredict.py">
+    <entry file="file://$PROJECT_DIR$/README.bilstm.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="26" column="62" selection-start-line="26" selection-start-column="62" selection-end-line="26" selection-end-column="62" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="555">
+          <caret line="37" column="23" selection-start-line="37" selection-start-column="23" selection-end-line="37" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/b_ner_data">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="274">
+          <caret column="108747" selection-start-column="108745" selection-end-column="108747" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/python2.7/json/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="309">
+          <caret line="257" column="4" selection-start-line="257" selection-start-column="4" selection-end-line="257" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ner_data/c_ner_data">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="31" selection-start-column="28" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/d_ner_data">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="763">
+          <caret column="869510" selection-start-column="869510" selection-end-column="869510" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/bi_lstm_models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="317">
-          <caret line="102" lean-forward="true" selection-start-line="102" selection-end-line="102" />
+        <state relative-caret-position="2850">
+          <caret line="190" selection-start-line="190" selection-end-line="190" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/stat_file_ner2">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/bilstmTrain.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="722">
-          <caret line="92" column="25" lean-forward="true" selection-start-line="92" selection-start-column="25" selection-end-line="92" selection-end-column="25" />
+        <state relative-caret-position="541">
+          <caret line="44" column="44" lean-forward="true" selection-start-line="44" selection-start-column="44" selection-end-line="44" selection-end-column="44" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test4.ner">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-754413" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bilstmPredict.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="26" column="42" selection-start-line="26" selection-start-column="42" selection-end-line="26" selection-end-column="42" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stat_file pos">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
   </component>
 </project>

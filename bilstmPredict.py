@@ -26,7 +26,7 @@ def main():
     for sentence in data:
         sentence = [W2I[word] if word in W2I.keys() else W2I[UNK] for word in sentence]
         tags_pred = net.predict(sentence)
-        tags_pred = [str(tags[unicode(t)]) for t in tags_pred]
+        tags_pred = [tags[t] for t in tags_pred]
         total_tags = total_tags + tags_pred
     save_predictions(test_file, "test4."+options.type, total_tags)
 
@@ -55,7 +55,6 @@ def save_predictions(in_file, out_file, tags):
         if line.strip() == "":
             fd_out.write(line)
         else:
-            print tags[i]
             line = line.strip() + SEPARATOR + tags[i] + '\n'
             fd_out.write(line)
             i += 1

@@ -193,13 +193,13 @@ def save_nn_and_data(fname, neural_net, params, model, I2T, wp_index, ws_index,W
     }
     neural_net.save_model(fname)
     data_fd = open(fname+"_data", 'w')
-    json.dump(data_dict, data_fd)
+    json.dump(data_dict, data_fd, encoding='utf-8')
     data_fd.close()
 
 
 def load_nn_and_data(fname, nn):
     data_fd = open(fname + "_data", 'r')
-    loader = json.load(data_fd)
+    loader = json.load(data_fd, encoding='utf-8')
 
     params = loader["PARAMETERS"]
     words_list = loader["WORDS_LIST"]
@@ -212,6 +212,12 @@ def load_nn_and_data(fname, nn):
     I2W, I2C, ws_index, wp_index = words_list["I2W"], words_list["I2C"], words_list["WS_INDEX"], words_list["WP_INDEX"]
     C2I, W2I = words_list["C2I"], words_list["W2I"]
     model = loader["MODEL"]
+    W2I = {str(k):int(i) for k,i in W2I.items()}
+    C2I = {str(c):int(i) for c,i in C2I.items()}
+    I2W = {int(i):str(k) for i, k in I2W.items()}
+    wp_index = {str(w):int(i) for w,i in wp_index.items()}
+    ws_index = {str(w):int(i) for w,i in ws_index.items()}
+    tags = {int(i):str(t) for i,t in tags.items()}
     if model == dy.Model.__name__:
         model = dy.Model()
     else:
